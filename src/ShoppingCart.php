@@ -5,22 +5,30 @@ declare(strict_types=1);
 namespace App;
 
 use App\Item;
-use InvalidArgumentException;
+use App\ShoppingCartException;
 
 class ShoppingCart
 {
-
     private array $items = [];
+    private const MAXIMUM_NUMBER_OF_ITEMS = 5;
 
     public function addItem(Item $item): void
     {
+        if (in_array($item, $this->items)) {
+            throw ShoppingCartException::forAnExistentItem($item);
+        }
+
+        if ($this->numberOfItems() === self::MAXIMUM_NUMBER_OF_ITEMS) {
+            throw ShoppingCartException::forMaximumNumberOfItems(self::MAXIMUM_NUMBER_OF_ITEMS);
+        }
+
         array_push($this->items, $item);
     }
 
     public function removeItem(Item $item): void
     {
-        if (!in_array($item, $this->items)) {
-            throw new InvalidArgumentException("Não é possível remover um item que não está no carrinho");
+        if (! in_array($item, $this->items)) {
+            throw ShoppingCartException::forANonExistentItem($item);
         }
 
         $position = array_search($item, $this->items);
@@ -37,7 +45,7 @@ class ShoppingCart
         return count($this->items);
     }
 
-    public function getTotal(): float
+    public function getTotalPrice(): float
     {
         $prices = [];
 
@@ -48,8 +56,8 @@ class ShoppingCart
         return array_sum($prices);
     }
 
-    public function hasItemsOnCart(): bool
+    public function isEmpty(): bool
     {
-        return $this->numberOfItems() > 0;
+        return $this->numberOfItems() === 0;
     }
 }

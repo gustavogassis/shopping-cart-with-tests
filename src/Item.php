@@ -9,20 +9,15 @@ use InvalidArgumentException;
 
 class Item
 {
-
     private Product $product;
     private int $quantity;
     private float $discount;
 
     public function __construct(Product $product, int $quantity, float $discount)
     {
-        if ($quantity < 1) {
-            throw new InvalidArgumentException("Um item não pode ter uma quantidade menor que 1");
-        }
-
         $this->product = $product;
-        $this->quantity = $quantity;
-        $this->discount = $discount;
+        $this->setQuantity($quantity);
+        $this->setDiscount($discount);
     }
 
     public function totalPrice(): float
@@ -43,5 +38,23 @@ class Item
     public function discount(): float
     {
         return $this->discount;
+    }
+
+    public function setQuantity(int $quantity): void
+    {
+        if ($quantity < 1) {
+            throw new InvalidArgumentException("Um item deve ter pelo menos uma unidade.");
+        }
+
+        $this->quantity = $quantity;
+    }
+
+    public function setDiscount(float $discount): void
+    {
+        if ($discount < 0) {
+            throw new InvalidArgumentException("O desconto não pode ser um valor negativo.");
+        }
+
+        $this->discount = $discount;
     }
 }

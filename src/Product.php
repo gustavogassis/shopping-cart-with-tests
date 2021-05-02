@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
+use InvalidArgumentException;
+
 class Product
 {
     private int $id;
@@ -14,7 +16,7 @@ class Product
     {
         $this->id = $id;
         $this->description = $description;
-        $this->price = $price;
+        $this->setPrice($price);
     }
 
     public function id(): int
@@ -30,5 +32,14 @@ class Product
     public function price(): float
     {
         return $this->price;
+    }
+
+    public function setPrice(float $price): void
+    {
+        if ($price <= 0) {
+            throw new InvalidArgumentException("O preço de um produto não ser zero ou negativo.");
+        }
+
+        $this->price = $price;
     }
 }
